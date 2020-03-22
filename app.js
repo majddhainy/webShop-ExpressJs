@@ -13,11 +13,13 @@ app.set('view engine','ejs');
 // by default /views is the views dir but u can change using app.set('views','viewsFoldername');
 
 //importing admin (routes  and Data[products])  from routes/admin.js [ CHECK IT ! ]
-const adminData = require('./routes/admin');
+const adminRoutes = require('./routes/admin');
 
 //importing shop routes for normal users    from routes/shop.js [ CHECK IT ! ]
 const shopRoutes = require('./routes/shop');
 
+// get error controller 
+const error = require('./controllers/error');
 // import this .. to construct path easily  [on diff OS also]
 const path = require('path');
 
@@ -33,15 +35,13 @@ app.use(express.static(path.join(rootDir,'public')));
 //  ==     using specific GET and POST will make path EXACT not MATCH  or REGEX while using USE will take any path starts with /xyz ...    ==
 
 // using admin routes here , '/admin' instead of using many times in get post and all admin routes use once here !  [ So all admin routes will start with admin/ ]
-app.use('/admin',adminData.routes);
+app.use('/admin',adminRoutes);
 
 // using shop routes here [Note order still important in our middlewares]
 app.use(shopRoutes);
 
 //  any route outside our  predefined routes will return and 404 page ... 
-app.use('/',(req,res,next)=>{
-    res.status(404).render('404', { pageTitle: 'Page Not Found' , path : '' });
-})
+app.use('/',error.get404);
 
 //running our server on port 3000
 app.listen(3000);
